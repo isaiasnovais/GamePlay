@@ -1,3 +1,5 @@
+//@app: collection -> padrão definido
+
 const DATABASE_NAME = '@gameplay';
 
 const COLLECTION_USERS = `${DATABASE_NAME}:user`;

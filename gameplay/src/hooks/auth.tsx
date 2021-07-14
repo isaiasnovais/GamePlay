@@ -2,7 +2,10 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 
 import * as AuthSession from 'expo-auth-session';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { api } from '../services/api';
+import { COLLECTION_USERS } from '../configs/database';
 
 const { SCOPE } = process.env;
 const { CLIENT_ID } = process.env;
@@ -49,7 +52,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             setLoading(true);
 
             const authUrl = `${api.defaults.baseURL}/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
-
+            console.log(authUrl);
+            
             const { type, params } = await AuthSession.startAsync({ authUrl }) as AuthorizationResponse;
 
             if (type === "success" && !params.error) {
@@ -66,8 +70,9 @@ function AuthProvider({ children }: AuthProviderProps) {
                     token: params.access_token
                 }
 
-                // await AsyncStorage.setItem(COLLECTION_USERS, JSON.stringify(userData));
-                // setUser(userData);
+                /** Verificar se os dados do usuário já esta armazenado no Storege Local */
+                await AsyncStorage.setItem(COLLECTION_USERS, JSON.stringify(userData));
+                setUser(userData);
             }
         } catch {
             throw new Error('Não foi possível autenticar');
@@ -75,6 +80,22 @@ function AuthProvider({ children }: AuthProviderProps) {
             setLoading(false);
         }
     }
+
+    async function loadUserStorageData() {
+        const storage = await AsyncStorage.getItem(COLLECTION_USERS);
+
+        if (storage) {
+            const userLogged = JSON.parse(storage) as User;
+            api.defaults.headers.authorization = `Bearer ${userLogged.token}`;
+
+            setUser(userLogged);
+        }
+    }
+
+    /** Buscar no dispositivo os dados armazenados localmente */
+    useEffect(() => {
+        loadUserStorageData();
+    }, []);
 
 
     return (

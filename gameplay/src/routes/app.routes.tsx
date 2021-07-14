@@ -2,15 +2,14 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Home } from '../screens/Home';
-import { AppointmentDetails } from '../screens/AppointmentDetails';
 import { AppointmentCreate } from '../screens/AppointmentCreate';
+import { AppointmentDetails } from '../screens/AppointmentDetails';
 
 import { theme } from '../global/styles/theme';
 
-
 const { Navigator, Screen } = createStackNavigator();
 
-export function AuthRoutes() {
+export function AppRoutes() {
     /** Nome das rotas para nagevação. Ex.:name="Signin"  */
     return (
         <Navigator headerMode="none" screenOptions={{ cardStyle: { backgroundColor: theme.colors.secondary100 } }}>
